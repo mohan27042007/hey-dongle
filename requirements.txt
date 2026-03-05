@@ -1,0 +1,24 @@
+# Hey Dongle — Dependencies
+# Install with: pip install -r requirements.txt
+
+# ── CORE ─────────────────────────────────────────────────────────────────────
+
+# Local LLM inference (CPU-optimized llama.cpp bindings)
+llama-cpp-python>=0.2.90
+
+# Terminal UI framework
+textual>=0.59.0
+
+# ── ONLINE / ENHANCED MODE (OPTIONAL) ────────────────────────────────────────
+
+# Groq API client — only needed for Enhanced Mode
+# Get free API key at: https://console.groq.com
+groq>=0.9.0
+
+# Lightweight async HTTP client
+httpx>=0.27.0
+
+# ── PACKAGING (DEV ONLY — NOT NEEDED ON USB) ─────────────────────────────────
+
+# Build standalone executable for USB deployment
+# pyinstaller>=6.0.0

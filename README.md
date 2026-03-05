@@ -14,6 +14,7 @@
 Over **2 billion people** face unreliable internet monthly. But the deeper problem for developers isn't just connectivity — it's *dependency*.
 
 Every modern AI coding tool assumes:
+
 - A working internet connection
 - A pre-configured machine
 - Ollama or a runtime pre-installed
@@ -54,12 +55,15 @@ Plug it into any machine running Linux, macOS, or Windows with Python available,
 ## Core Agentic Capabilities
 
 ### 1. Codebase-Aware Context
+
 Hey Dongle reads your project directory on startup and builds a lightweight index of your files. It doesn't just answer questions — it knows what you're working on.
 
 ### 2. Autonomous File Operations
+
 The agent reads files, writes files, creates new ones, and applies targeted edits — with your confirmation before any destructive action. This is a real agentic loop, not suggestions you copy-paste manually.
 
 ### 3. Code Execution & Iteration
+
 It runs your code, reads the output or error, and iterates — up to N steps — until the task is complete or it asks for your input.
 
 ```
@@ -67,9 +71,11 @@ It runs your code, reads the output or error, and iterates — up to N steps —
 ```
 
 ### 4. Natural Language Task Interface
+
 Describe what you want in plain English. Hey Dongle breaks it into steps, executes them, and reports back. No memorizing commands.
 
 ### 5. Persistent Conversation Memory
+
 Session history is stored locally on the USB. Come back the next day, plug in, and it remembers exactly where you left off.
 
 ---
@@ -125,6 +131,7 @@ HeyDongle/
 ## Roadmap
 
 ### Phase 1 — FOSS Hack 2026 *(Current)*
+
 - Zero-setup USB deployment
 - Qwen2.5-Coder 3B bundled, fully offline
 - Agentic loop: file read / write / execute / iterate
@@ -132,11 +139,13 @@ HeyDongle/
 - Persistent session memory via SQLite
 
 ### Phase 2 — Post Hackathon
+
 - RAG over local codebase for larger projects
 - User-swappable model support (bring your own GGUF)
 - Multi-file refactor planning
 
 ### Phase 3 — Future
+
 - MCP (Model Context Protocol) tool integration
 - Support for even lower-spec hardware via further quantization
 - Community model registry for offline download packs
@@ -155,4 +164,4 @@ Hey Dongle is built for and by the FOSS community. Contributions welcome — see
 
 ---
 
-*Built for FOSS Hack 2026 🇮🇳*
+Built for FOSS Hack 2026 🇮🇳

@@ -1,0 +1,7 @@
+Place your GGUF model file here.
+
+Recommended: qwen2.5-coder-3b-q4_k_m.gguf
+Download from: https://huggingface.co/Qwen/Qwen2.5-Coder-3B-Instruct-GGUF
+
+This folder is excluded from git via .gitignore
+(model files are too large to commit — ~2GB)
