@@ -92,6 +92,36 @@ MAX_LINES_PER_FILE = 200      # truncate files longer than this in the index
 CONTEXT_BUDGET_CHARS = 6000   # max chars for the full index summary (leaves room for conversation)
 
 
+# ── CODE EXECUTION ────────────────────────────────────────────────────────────
+
+# Code execution settings
+EXECUTION_TIMEOUT_SECONDS = 10      # kill process after this many seconds
+MAX_OUTPUT_LENGTH_CHARS   = 5000    # truncate combined stdout+stderr to this
+ALLOWED_LANGUAGES = {
+    "python":     ["python",  "-c"],
+    "python3":    ["python3", "-c"],
+    "javascript": ["node",    "-e"],
+    "js":         ["node",    "-e"],
+    "bash":       ["bash",    "-c"],
+    "sh":         ["sh",      "-c"],
+}
+
+# Dangerous patterns that must never appear in executed code
+BLOCKED_PATTERNS = [
+    "rm -rf", "rm -r", "rmdir /s", "del /f",    # recursive delete
+    "format c", "mkfs",                           # disk format
+    ":(){:|:&};:",                                # fork bomb
+    "os.system", "subprocess.call",               # subprocess inside execution
+    "shutil.rmtree",                              # recursive delete via Python
+    "shutdown", "reboot", "halt",                 # system control
+    "__import__('os').system",                    # obfuscated os.system
+    "eval(", "exec(",                             # code injection vectors
+    "open('/etc", "open('C:\\Windows",            # system file access
+    "socket.connect", "urllib.request",           # network calls from executed code
+    "requests.get", "requests.post",              # network calls
+]
+
+
 # ── CONNECTIVITY ──────────────────────────────────────────────────────────────
 
 # Endpoint to ping for connectivity check (lightweight, no tracking)

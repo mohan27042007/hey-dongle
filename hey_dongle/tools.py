@@ -1,4 +1,7 @@
 import os
+import subprocess
+import threading
+import time
 import config
 
 def _confirm(prompt_fn, action: str, details: str) -> bool:
@@ -175,3 +178,105 @@ def search_codebase(query: str, project_dir: str = None) -> str:
         return "\n".join(result)
     except Exception as e:
         return f"Error searching codebase: {str(e)}"
+
+def _is_safe_code(code: str, language: str) -> tuple[bool, str]:
+    code_lower = code.lower()
+    for pattern in config.BLOCKED_PATTERNS:
+        if pattern.lower() in code_lower:
+            return False, f"Blocked pattern detected: '{pattern}'"
+            
+    # Extra check for shell languages — block absolute paths to system dirs
+    if language in ("bash", "sh"):
+        shell_danger = ["/etc/", "/sys/", "/proc/", "C:\\Windows", "C:\\System"]
+        for danger in shell_danger:
+            if danger.lower() in code_lower:
+                return False, f"Shell access to system path blocked: '{danger}'"
+                
+    return True, ""
+
+def _execute_with_timeout(command: list, timeout: int) -> str:
+    try:
+        proc = subprocess.Popen(
+            command,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            cwd=config.PROJECT_DIR,         # restrict to project directory
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            shell=False,                     # NEVER use shell=True
+        )
+
+        try:
+            stdout, stderr = proc.communicate(timeout=timeout)
+        except subprocess.TimeoutExpired:
+            proc.kill()
+            proc.communicate()               # clean up the zombie process
+            return (
+                f"Error: Execution timed out after {timeout} seconds. "
+                "The process was terminated."
+            )
+
+        # Combine output
+        output_parts = []
+        if stdout and stdout.strip():
+            output_parts.append(f"[stdout]\n{stdout.rstrip()}")
+        if stderr and stderr.strip():
+            output_parts.append(f"[stderr]\n{stderr.rstrip()}")
+
+        if not output_parts:
+            return f"[Executed successfully — no output] (exit code {proc.returncode})"
+
+        combined = "\n\n".join(output_parts)
+
+        # Truncate if too long
+        if len(combined) > config.MAX_OUTPUT_LENGTH_CHARS:
+            combined = (
+                combined[:config.MAX_OUTPUT_LENGTH_CHARS]
+                + f"\n\n[Output truncated at {config.MAX_OUTPUT_LENGTH_CHARS} chars]"
+            )
+
+        exit_note = "" if proc.returncode == 0 else f"\n\n[Exit code: {proc.returncode}]"
+        return combined + exit_note
+
+    except FileNotFoundError:
+        cmd_name = command[0]
+        return (
+            f"Error: Runtime '{cmd_name}' not found on this machine. "
+            f"Install it or use a different language."
+        )
+    except Exception as e:
+        return f"Error executing code: {str(e)}"
+
+def run_code(language: str, code: str, prompt_fn=None) -> str:
+    try:
+        # Step 1 — validate language
+        lang_key = language.lower().strip()
+        if lang_key not in config.ALLOWED_LANGUAGES:
+            supported = ", ".join(config.ALLOWED_LANGUAGES.keys())
+            return (
+                f"Error: Unsupported language '{language}'. "
+                f"Supported: {supported}"
+            )
+
+        # Step 2 — safety check
+        is_safe, reason = _is_safe_code(code, lang_key)
+        if not is_safe:
+            return f"Error: Code blocked by safety filter. {reason}"
+
+        # Step 3 — permission check
+        preview = code[:200] + "..." if len(code) > 200 else code
+        details = f"Execute {language} code:\n{preview}"
+        if not _confirm(prompt_fn, "run_code", details):
+            return "Action denied: run_code"
+
+        # Step 4 — build the command
+        cmd_prefix = config.ALLOWED_LANGUAGES[lang_key]
+        command = cmd_prefix + [code]
+
+        # Step 5 — execute with timeout
+        result = _execute_with_timeout(command, config.EXECUTION_TIMEOUT_SECONDS)
+        return result
+
+    except Exception as e:
+        return f"Error in run_code: {str(e)}"

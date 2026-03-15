@@ -81,3 +81,36 @@ class TestTools(unittest.TestCase):
             self.assertIn("match.py", result)
             self.assertNotIn("no_match.py", result)
             self.assertIn("my_secret_function", result)
+
+    def test_7_run_code_executes_python_and_returns_stdout(self):
+        """run_code executes Python and returns stdout"""
+        result = tools.run_code("python", "print('hello from hey dongle')",
+                          prompt_fn=lambda a, d: True)
+        self.assertIn("hello from hey dongle", result)
+
+    def test_8_run_code_captures_stderr_correctly(self):
+        """run_code captures stderr correctly"""
+        result = tools.run_code("python", "import sys; sys.stderr.write('test error\\n')",
+                          prompt_fn=lambda a, d: True)
+        self.assertIn("test error", result)
+        self.assertIn("[stderr]", result)
+
+    def test_9_run_code_blocks_dangerous_patterns(self):
+        """run_code blocks dangerous patterns"""
+        result = tools.run_code("python", "import os; os.system('rm -rf /')",
+                          prompt_fn=lambda a, d: True)
+        self.assertTrue(result.startswith("Error:"))
+        self.assertIn("blocked", result.lower())
+
+    def test_10_run_code_enforces_timeout(self):
+        """run_code enforces timeout"""
+        result = tools.run_code("python", "import time; time.sleep(30)",
+                          prompt_fn=lambda a, d: True)
+        self.assertIn("timed out", result.lower())
+
+    def test_11_run_code_rejects_unsupported_language(self):
+        """run_code rejects unsupported language"""
+        result = tools.run_code("cobol", "DISPLAY 'Hello'.",
+                          prompt_fn=lambda a, d: True)
+        self.assertTrue(result.startswith("Error:"))
+        self.assertIn("Unsupported language", result)
