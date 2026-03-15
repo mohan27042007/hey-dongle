@@ -17,7 +17,7 @@ MODELS_DIR = os.path.join(BASE_DIR, "models")
 DATA_DIR = os.path.join(BASE_DIR, "data")
 
 # Session database path
-SESSION_DB_PATH = os.path.join(DATA_DIR, "sessions.db")
+DB_PATH = os.path.join(BASE_DIR, "data", "sessions.db")
 
 
 # ── LOCAL MODEL ───────────────────────────────────────────────────────────────

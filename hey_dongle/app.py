@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Optional
 
 import config
+import hey_dongle.memory as memory
 from textual.app import App, ComposeResult
 from textual.binding import Binding
 from textual.widgets import Header, Input, RichLog, Static
@@ -44,6 +45,7 @@ class HeyDongleApp(App):
         Binding("ctrl+q", "quit", "Quit", show=False),
     ]
     _current_status: str = STATUS_CHECKING  # tracks last status bar text
+    _session_id: str = ""                   # tracks current memory session
 
     # ── Lifecycle ──────────────────────────────────────────────────────────────
 
@@ -67,6 +69,29 @@ class HeyDongleApp(App):
 
         # Start the non-blocking connectivity check
         self._check_connectivity()
+        
+        # Initialize memory
+        memory.init_db(config.DB_PATH)
+        
+        # Load last session or create new one
+        last = memory.get_last_session(config.DB_PATH)
+        if last:
+            self._session_id = last
+            self._load_history_into_panel(last)
+        else:
+            self._session_id = memory.new_session_id()
+
+    def _load_history_into_panel(self, session_id: str) -> None:
+        messages = memory.load_session(config.DB_PATH, session_id)
+        if not messages:
+            return
+        output = self.query_one("#output-panel", RichLog)
+        output.write("[dim]─── Previous session restored ───[/dim]")
+        for msg in messages:
+            if msg["role"] == "user":
+                output.write(f"\n[bold #e94560]You →[/] {msg['content']}")
+            else:
+                output.write(f"\n[bold #10b981]🔌 Hey Dongle[/]  {msg['content']}")
 
     # ── Connectivity (background thread) ──────────────────────────────────────
 
@@ -107,11 +132,21 @@ class HeyDongleApp(App):
         input_box = self.query_one("#input-box", Input)
         output    = self.query_one("#output-panel", RichLog)
 
+        # Handle clear command
+        if message.lower() == "/clear":
+            count = memory.clear_session(config.DB_PATH, self._session_id)
+            self._session_id = memory.new_session_id()
+            output.clear()
+            output.write(f"[dim]Session cleared ({count} messages deleted). New session started.[/dim]")
+            input_box.value = ""
+            return
+
         # Clear the input immediately
         input_box.value = ""
 
-        # Display user message
+        # Display user message and save to memory
         output.write(f"\n[bold #e94560]You →[/] {message}")
+        memory.save_message(config.DB_PATH, self._session_id, "user", message)
 
         # Disable input while responding
         input_box.disabled = True
@@ -144,6 +179,7 @@ class HeyDongleApp(App):
 
     def _write_full_response(self, text: str) -> None:
         """Write the complete assistant response to the output panel."""
+        memory.save_message(config.DB_PATH, self._session_id, "assistant", text)
         output = self.query_one("#output-panel", RichLog)
         output.write(f"\n[bold #10b981]🔌 Hey Dongle[/]  {text}")
         self._finish_response()

@@ -1,0 +1,71 @@
+test_1_init_db_creates_table (tests.test_memory.TestMemory.test_1_init_db_creates_table)
+init_db creates the table. ... ERROR
+test_2_save_and_load_round_trip (tests.test_memory.TestMemory.test_2_save_and_load_round_trip)
+save and load round trip. ... ERROR
+test_3_get_last_session (tests.test_memory.TestMemory.test_3_get_last_session)
+get_last_session returns correct session. ... ERROR
+test_4_clear_session (tests.test_memory.TestMemory.test_4_clear_session)
+clear_session deletes only the target session. ... ERROR
+test_5_new_session_id (tests.test_memory.TestMemory.test_5_new_session_id)
+new_session_id format. ... ok
+
+======================================================================
+ERROR: test_1_init_db_creates_table (tests.test_memory.TestMemory.test_1_init_db_creates_table)
+init_db creates the table.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\mohanarangan\hey-dongle\tests\test_memory.py", line 11, in test_1_init_db_creates_table
+    memory.init_db(":memory:")
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\mohanarangan\hey-dongle\hey_dongle\memory.py", line 8, in init_db
+    os.makedirs(os.path.dirname(db_path), exist_ok=True)
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen os>", line 228, in makedirs
+FileNotFoundError: [WinError 3] The system cannot find the path specified: ''
+
+======================================================================
+ERROR: test_2_save_and_load_round_trip (tests.test_memory.TestMemory.test_2_save_and_load_round_trip)
+save and load round trip.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\mohanarangan\hey-dongle\tests\test_memory.py", line 21, in test_2_save_and_load_round_trip
+    memory.init_db(":memory:")
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\mohanarangan\hey-dongle\hey_dongle\memory.py", line 8, in init_db
+    os.makedirs(os.path.dirname(db_path), exist_ok=True)
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen os>", line 228, in makedirs
+FileNotFoundError: [WinError 3] The system cannot find the path specified: ''
+
+======================================================================
+ERROR: test_3_get_last_session (tests.test_memory.TestMemory.test_3_get_last_session)
+get_last_session returns correct session.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\mohanarangan\hey-dongle\tests\test_memory.py", line 40, in test_3_get_last_session
+    memory.init_db(":memory:")
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\mohanarangan\hey-dongle\hey_dongle\memory.py", line 8, in init_db
+    os.makedirs(os.path.dirname(db_path), exist_ok=True)
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen os>", line 228, in makedirs
+FileNotFoundError: [WinError 3] The system cannot find the path specified: ''
+
+======================================================================
+ERROR: test_4_clear_session (tests.test_memory.TestMemory.test_4_clear_session)
+clear_session deletes only the target session.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\mohanarangan\hey-dongle\tests\test_memory.py", line 56, in test_4_clear_session
+    memory.init_db(":memory:")
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "C:\Users\mohanarangan\hey-dongle\hey_dongle\memory.py", line 8, in init_db
+    os.makedirs(os.path.dirname(db_path), exist_ok=True)
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen os>", line 228, in makedirs
+FileNotFoundError: [WinError 3] The system cannot find the path specified: ''
+
+----------------------------------------------------------------------
+Ran 5 tests in 1.004s
+
+FAILED (errors=4)
