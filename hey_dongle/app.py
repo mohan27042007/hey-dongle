@@ -10,6 +10,7 @@ from typing import Optional
 
 import config
 import hey_dongle.memory as memory
+import hey_dongle.indexer as indexer
 from textual.app import App, ComposeResult
 from textual.binding import Binding
 from textual.widgets import Header, Input, RichLog, Static
@@ -46,6 +47,7 @@ class HeyDongleApp(App):
     ]
     _current_status: str = STATUS_CHECKING  # tracks last status bar text
     _session_id: str = ""                   # tracks current memory session
+    _index: dict = {}                       # stores the mapped codebase
 
     # ── Lifecycle ──────────────────────────────────────────────────────────────
 
@@ -80,6 +82,17 @@ class HeyDongleApp(App):
             self._load_history_into_panel(last)
         else:
             self._session_id = memory.new_session_id()
+
+        # Build codebase index
+        self._index = indexer.build_index(config.PROJECT_DIR)
+        
+        output = self.query_one("#output-panel", RichLog)
+        file_count = self._index["total_files"]
+        lang_count = len(self._index["languages"])
+        output.write(
+            f"[dim]📁 Indexed {file_count} files "
+            f"across {lang_count} languages[/dim]"
+        )
 
     def _load_history_into_panel(self, session_id: str) -> None:
         messages = memory.load_session(config.DB_PATH, session_id)

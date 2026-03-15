@@ -64,25 +64,32 @@ MAX_CHARS_PER_FILE = 2000
 # Code execution timeout in seconds
 EXECUTION_TIMEOUT = 10
 
-# File extensions to include when indexing the codebase
-SUPPORTED_EXTENSIONS = (
+# Codebase indexer settings
+PROJECT_DIR = os.getcwd()  # directory to index — defaults to wherever app is launched from
+
+SUPPORTED_EXTENSIONS = {
     ".py", ".js", ".ts", ".jsx", ".tsx",
     ".c", ".cpp", ".h", ".hpp",
-    ".go", ".rs", ".java", ".kt",
-    ".rb", ".php", ".swift",
-    ".sh", ".bash",
+    ".java", ".go", ".rs", ".rb",
+    ".php", ".swift", ".kt", ".cs",
+    ".html", ".css", ".scss",
     ".json", ".yaml", ".yml", ".toml",
-    ".md", ".txt"
-)
+    ".md", ".txt", ".sh", ".bash",
+    ".sql", ".r", ".m", ".lua",
+}
 
-# Directories to skip when indexing the codebase
-IGNORED_DIRS = (
-    "node_modules", ".git", "__pycache__",
-    ".venv", "venv", "env",
-    ".idea", ".vscode",
-    "dist", "build", "target",
-    "models", "data"
-)
+SKIP_DIRS = {
+    "node_modules", ".git", "__pycache__", ".venv", "venv",
+    "env", ".env", "dist", "build", ".next", ".nuxt",
+    "target", "out", ".idea", ".vscode", "coverage",
+    ".pytest_cache", "eggs", ".eggs", "*.egg-info",
+    ".mypy_cache", ".ruff_cache", "vendor", "vendors",
+}
+
+MAX_FILE_SIZE_KB = 100        # skip files larger than this — likely binary or generated
+MAX_FILES_IN_INDEX = 200      # cap total files to prevent context explosion
+MAX_LINES_PER_FILE = 200      # truncate files longer than this in the index
+CONTEXT_BUDGET_CHARS = 6000   # max chars for the full index summary (leaves room for conversation)
 
 
 # ── CONNECTIVITY ──────────────────────────────────────────────────────────────
