@@ -1,0 +1,30 @@
+test_1_parse_tool_call_extracts_valid_json (tests.test_agent.TestAgent.test_1_parse_tool_call_extracts_valid_json)
+_parse_tool_call extracts valid JSON. ... ok
+test_2_parse_tool_call_strips_markdown_fences (tests.test_agent.TestAgent.test_2_parse_tool_call_strips_markdown_fences)
+_parse_tool_call strips markdown fences. ... ok
+test_3_parse_tool_call_returns_none_for_plain_text (tests.test_agent.TestAgent.test_3_parse_tool_call_returns_none_for_plain_text)
+_parse_tool_call returns None for plain text. ... ok
+test_4_execute_tool_routes_read_file_correctly (tests.test_agent.TestAgent.test_4_execute_tool_routes_read_file_correctly)
+_execute_tool routes read_file correctly. ... ok
+test_5_run_agent_loop_returns_string_when_model_returns_plain_text_immediately (tests.test_agent.TestAgent.test_5_run_agent_loop_returns_string_when_model_returns_plain_text_immediately)
+run_agent_loop returns string when model returns plain text immediately. ... ERROR
+
+======================================================================
+ERROR: test_5_run_agent_loop_returns_string_when_model_returns_plain_text_immediately (tests.test_agent.TestAgent.test_5_run_agent_loop_returns_string_when_model_returns_plain_text_immediately)
+run_agent_loop returns string when model returns plain text immediately.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\mohanarangan\hey-dongle\tests\test_agent.py", line 45, in test_5_run_agent_loop_returns_string_when_model_returns_plain_text_immediately
+    result = agent.run_agent_loop(
+        user_message="What is 6 times 7?",
+    ...<3 lines>...
+        status_callback=None
+    )
+  File "C:\Users\mohanarangan\hey-dongle\hey_dongle\agent.py", line 183, in run_agent_loop
+    system_prompt = SYSTEM_PROMPT.format(context_summary=context_summary)
+KeyError: '"tool"'
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.007s
+
+FAILED (errors=1)

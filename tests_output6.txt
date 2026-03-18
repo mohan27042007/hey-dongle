@@ -1,0 +1,11 @@
+test_1_app_initializes (tests.test_app.TestApp.test_1_app_initializes)
+App should start and render without raising any exceptions. ... Executing <Task finished name='Task-16' coro=<Worker._run() done, defined at C:\Users\mohanarangan\hey-dongle\.venv\Lib\site-packages\textual\worker.py:358> result=None created at C:\Program Files\Python313\Lib\asyncio\tasks.py:410> took 0.380 seconds
+test_2_required_widgets_exist (tests.test_app.TestApp.test_2_required_widgets_exist)
+All 3 required widget IDs must be present in the DOM. ... ok
+test_3_input_submission (tests.test_app.TestApp.test_3_input_submission)
+Typing a message and pressing Enter should clear the input. ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 34.678s
+
+OK
