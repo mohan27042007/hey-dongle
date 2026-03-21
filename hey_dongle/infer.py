@@ -1,13 +1,22 @@
 import json
 import re
 from typing import List, Dict, Any, Optional, Union
-from llama_cpp import Llama
 import config
 import os
 
-_model: Optional[Llama] = None
+_model = None
 
-def load_model() -> Llama:
+def _get_llama():
+    try:
+        from llama_cpp import Llama
+        return Llama
+    except ImportError:
+        raise ImportError(
+            "llama-cpp-python is not installed. "
+            "Install it with: pip install llama-cpp-python"
+        )
+
+def load_model():
     """
     Loads the GGUF model from config.MODEL_PATH as a singleton.
     Forces CPU only and uses exact settings from config.
@@ -15,6 +24,8 @@ def load_model() -> Llama:
     global _model
     if _model is not None:
         return _model
+
+    Llama = _get_llama()
 
     if not os.path.exists(config.MODEL_PATH):
         raise FileNotFoundError(f"Model file not found at {config.MODEL_PATH}. Please download it first.")

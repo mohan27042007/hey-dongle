@@ -28,7 +28,7 @@ def test_supported_extensions_not_empty():
 
 
 def test_ignored_dirs_not_empty():
-    assert len(config.IGNORED_DIRS) > 0
+    assert len(config.SKIP_DIRS) > 0
 
 
 if __name__ == "__main__":

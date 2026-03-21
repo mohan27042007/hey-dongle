@@ -1,7 +1,5 @@
 import os
 import subprocess
-import threading
-import time
 import config
 
 def _confirm(prompt_fn, action: str, details: str) -> bool:

@@ -5,6 +5,7 @@ import hey_dongle.tools as tools
 import hey_dongle.infer as infer
 
 SYSTEM_PROMPT = """You are Hey Dongle, an offline AI coding assistant running on a USB drive.
+For simple questions and greetings, respond with plain text directly. Only use tools when you need to read, write, or search files.
 You help developers read, understand, edit, and fix code.
 
 You have access to the following tools. To use a tool, respond with ONLY a JSON object in this exact format:
@@ -137,7 +138,7 @@ def _execute_tool(tool_name: str, args: dict, prompt_fn) -> str:
         elif tool_name == "search_codebase":
             return tools.search_codebase(args.get("query", ""))
         else:
-            return f"Error: Unknown tool '{tool_name}'"
+            return f"Tool '{tool_name}' does not exist. Please respond with plain text instead of using tools."
     except Exception as e:
         return f"Error executing {tool_name}: {str(e)}"
 
@@ -189,6 +190,8 @@ def run_agent_loop(
 
     tool_definitions = _build_tool_definitions()
     final_response = None
+    unknown_tool_count = 0
+    last_tool_call = None
 
     for iteration in range(config.MAX_ITERATIONS):
         # Update status bar if callback provided
@@ -198,13 +201,15 @@ def run_agent_loop(
         # Call the model
         response = infer.chat_with_tools(messages, tool_definitions)
 
-        # Try to parse as a tool call
-        tool_call = _parse_tool_call(response)
-
-        if tool_call is None:
-            # No tool call — this is the final plain text answer
-            final_response = response.strip()
-            break
+        # Handle case where infer already parsed a tool call natively
+        if isinstance(response, dict) and "tool" in response and "args" in response:
+            tool_call = response
+        else:
+            # Try to parse as tool call from string
+            tool_call = _parse_tool_call(response)
+            if tool_call is None:
+                final_response = str(response).strip()
+                break
 
         # Valid tool call — execute it
         tool_name = tool_call["tool"]
@@ -215,8 +220,31 @@ def run_agent_loop(
 
         tool_result = _execute_tool(tool_name, tool_args, prompt_fn)
 
+        # Bail out after 2 consecutive unknown tool errors
+        if "does not exist" in tool_result:
+            unknown_tool_count += 1
+            if unknown_tool_count >= 2:
+                # Force a plain text response
+                messages.append({"role": "user", "content": "Please respond with plain text only, no tools."})
+                final_response = infer.chat(messages)
+                break
+        else:
+            unknown_tool_count = 0
+
+        # Bail out if model repeats the same tool call
+        call_signature = (tool_name, json.dumps(tool_args, sort_keys=True))
+        if call_signature == last_tool_call:
+            # Force a plain text response
+            messages.append({"role": "user", "content": "Please respond with plain text only, no tools."})
+            final_response = infer.chat(messages)
+            break
+        last_tool_call = call_signature
+
         # Add the tool call and result to message history
-        messages.append({"role": "assistant", "content": response})
+        if isinstance(response, str):
+            messages.append({"role": "assistant", "content": response})
+        else:
+            messages.append({"role": "assistant", "content": json.dumps(response)})
         messages.append({
             "role": "user",
             "content": f"[Tool result: {tool_name}]\n{tool_result}"

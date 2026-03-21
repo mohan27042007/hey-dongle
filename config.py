@@ -25,11 +25,11 @@ DB_PATH = os.path.join(BASE_DIR, "data", "sessions.db")
 # Path to your GGUF model file
 # Default: Qwen2.5-Coder 3B Q4_K_M (recommended for low-spec machines)
 # You can swap this to any GGUF model file you have
-MODEL_PATH = os.path.join(MODELS_DIR, "qwen2.5-coder-3b-q4_k_m.gguf")
+MODEL_PATH = os.path.join(MODELS_DIR, "qwen2.5-coder-1.5b-instruct-q4_k_m.gguf")
 
 # Context window size (tokens)
 # Qwen2.5-Coder 3B supports up to 32768 — keep at 8192 for low RAM machines
-N_CTX = 8192
+N_CTX = 4096
 
 # Number of CPU threads to use for inference
 # Set to your machine's core count for best performance
@@ -60,9 +60,6 @@ MAX_CONTEXT_FILES = 20
 
 # Maximum characters to read per file for context
 MAX_CHARS_PER_FILE = 2000
-
-# Code execution timeout in seconds
-EXECUTION_TIMEOUT = 10
 
 # Codebase indexer settings
 PROJECT_DIR = os.getcwd()  # directory to index — defaults to wherever app is launched from
