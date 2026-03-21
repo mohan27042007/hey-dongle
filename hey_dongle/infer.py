@@ -16,6 +16,36 @@ def _get_llama():
             "Install it with: pip install llama-cpp-python"
         )
 
+def validate_model() -> None:
+    """
+    Validates the model file exists and is a valid GGUF file.
+    Raises FileNotFoundError with clear instructions if not found.
+    """
+    if not os.path.exists(config.MODEL_PATH):
+        raise FileNotFoundError(
+            f"\n\n"
+            f"Model file not found: {config.MODEL_PATH}\n\n"
+            f"To fix this:\n"
+            f"  1. Download a GGUF model from huggingface.co\n"
+            f"  2. Place it in: {config.MODELS_DIR}\n"
+            f"  3. Update MODEL_FILENAME in config.py to match\n\n"
+            f"Recommended: qwen2.5-coder-1.5b-instruct-q4_k_m.gguf\n"
+            f"Download:    huggingface.co/Qwen/Qwen2.5-Coder-1.5B-Instruct-GGUF"
+        )
+
+    if not config.MODEL_PATH.endswith('.gguf'):
+        raise ValueError(
+            f"Model file must be a .gguf file: {config.MODEL_PATH}\n"
+            f"Download GGUF format models from huggingface.co"
+        )
+
+    size_mb = os.path.getsize(config.MODEL_PATH) / (1024 * 1024)
+    if size_mb < 100:
+        raise ValueError(
+            f"Model file is too small ({size_mb:.0f} MB) — likely corrupted.\n"
+            f"Re-download the model file."
+        )
+
 def load_model():
     """
     Loads the GGUF model from config.MODEL_PATH as a singleton.
@@ -25,10 +55,8 @@ def load_model():
     if _model is not None:
         return _model
 
+    validate_model()
     Llama = _get_llama()
-
-    if not os.path.exists(config.MODEL_PATH):
-        raise FileNotFoundError(f"Model file not found at {config.MODEL_PATH}. Please download it first.")
 
     try:
         _model = Llama(
@@ -117,8 +145,12 @@ def get_model_info() -> Dict[str, Any]:
     Returns a simple dictionary containing current model settings.
     """
     return {
-        "name": os.path.basename(config.MODEL_PATH),
+        "filename": config.MODEL_FILENAME,
+        "path": config.MODEL_PATH,
         "n_ctx": config.N_CTX,
         "n_threads": config.N_THREADS,
-        "loaded": _model is not None
+        "loaded": _model is not None,
+        "size_mb": round(
+            os.path.getsize(config.MODEL_PATH) / (1024 * 1024), 1
+        ) if os.path.exists(config.MODEL_PATH) else 0
     }

@@ -22,20 +22,32 @@ DB_PATH = os.path.join(BASE_DIR, "data", "sessions.db")
 
 # ── LOCAL MODEL ───────────────────────────────────────────────────────────────
 
-# Path to your GGUF model file
-# Default: Qwen2.5-Coder 3B Q4_K_M (recommended for low-spec machines)
-# You can swap this to any GGUF model file you have
-MODEL_PATH = os.path.join(MODELS_DIR, "qwen2.5-coder-1.5b-instruct-q4_k_m.gguf")
+# Path to your GGUF model file.
+# To switch models:
+#   1. Download any GGUF model and place it in the models/ folder
+#   2. Change MODEL_FILENAME to match the filename
+#   3. Restart Hey Dongle
+#
+# Recommended models (download from huggingface.co):
+#   Fast (low RAM):  qwen2.5-coder-1.5b-instruct-q4_k_m.gguf  (~1 GB)
+#   Balanced:        qwen2.5-coder-3b-q4_k_m.gguf              (~2 GB)
+#   Best quality:    qwen2.5-coder-7b-q4_k_m.gguf              (~4.5 GB)
+
+MODEL_FILENAME = "qwen2.5-coder-1.5b-instruct-q4_k_m.gguf"
+MODEL_PATH     = os.path.join(MODELS_DIR, MODEL_FILENAME)
 
 # Context window size (tokens)
-# Qwen2.5-Coder 3B supports up to 32768 — keep at 8192 for low RAM machines
+# Larger = more context but slower load and more RAM
+# 2048  — fast, low RAM
+# 4096  — balanced (recommended)
+# 8192  — best for large codebases (needs 8GB+ RAM)
 N_CTX = 4096
 
-# Number of CPU threads to use for inference
-# Set to your machine's core count for best performance
+# Number of CPU threads for inference
+# Set to your CPU core count for best performance
 N_THREADS = 4
 
-# Verbose mode for llama.cpp (set True to debug model loading issues)
+# Verbose llama.cpp output (set True to debug model loading)
 VERBOSE = False
 
 

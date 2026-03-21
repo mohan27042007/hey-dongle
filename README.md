@@ -103,6 +103,38 @@ Session history is stored locally on the USB. Come back the next day, plug in, a
 
 ---
 
+## Switching Models
+
+Hey Dongle works with any GGUF format model. To switch:
+
+1. Download a GGUF model and place it in the `models/` folder
+2. Open `config.py` and change `MODEL_FILENAME`:
+
+```python
+MODEL_FILENAME = "your-model-name.gguf"
+```
+
+3. Restart Hey Dongle
+
+### Recommended Models
+
+| Model | Size | RAM Required | Speed | Quality |
+|-------|------|-------------|-------|---------|
+| Qwen2.5-Coder 1.5B Q4 | ~1 GB | 4 GB | Fast | Good |
+| Qwen2.5-Coder 3B Q4 | ~2 GB | 6 GB | Medium | Better |
+| Qwen2.5-Coder 7B Q4 | ~4.5 GB | 10 GB | Slow | Best |
+
+Download from: [huggingface.co/Qwen](https://huggingface.co/Qwen)
+
+### Context Window
+
+Adjust `N_CTX` in `config.py` based on your RAM:
+- `2048` — 4 GB RAM machines
+- `4096` — 6-8 GB RAM machines (recommended)
+- `8192` — 12+ GB RAM machines
+
+---
+
 ## USB Structure
 
 ```

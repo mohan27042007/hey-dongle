@@ -27,12 +27,21 @@ WELCOME = (
     "[#64748b]Type a message and press Enter to get started.[/]\n"
 )
 
-STATUS_OFFLINE  = "⚫ Offline Mode  |  Model: Qwen2.5-Coder 1.5B  |  Context: 2K  |  Ready"
 STATUS_ENHANCED = "🟢 Enhanced Mode  |  Model: Groq Compound  |  Context: 128K  |  Ready"
-STATUS_NO_KEY   = "🟡 Online — No API Key  |  Model: Qwen2.5-Coder 1.5B  |  Context: 2K  |  Ready"
 STATUS_THINKING = "🔄 Thinking..."
 STATUS_STARTUP  = "⏳ Starting up..."
 STATUS_LOADING  = "⏳ Loading model..."
+
+def _get_model_display_name():
+    return config.MODEL_FILENAME.split('-instruct')[0]
+
+def _get_status_offline():
+    ctx_k = config.N_CTX // 1024
+    return f"⚫ Offline Mode  |  Model: {_get_model_display_name()}  |  Context: {ctx_k}K  |  Ready"
+
+def _get_status_no_key():
+    ctx_k = config.N_CTX // 1024
+    return f"🟡 Online — No API Key  |  Model: {_get_model_display_name()}  |  Context: {ctx_k}K  |  Ready"
 
 
 # ── CUSTOM MESSAGES (for thread → main thread communication) ──────────────────
@@ -175,9 +184,9 @@ class HeyDongleApp(App):
             if message.online and has_key:
                 status = STATUS_ENHANCED
             elif message.online:
-                status = STATUS_NO_KEY
+                status = _get_status_no_key()
             else:
-                status = STATUS_OFFLINE
+                status = _get_status_offline()
             self._current_status = status
             self.query_one("#status-bar", Static).update(status)
 
